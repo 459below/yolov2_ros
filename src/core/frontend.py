@@ -82,9 +82,9 @@ class YOLO(object):
         else:
             raise Exception('Architecture not supported! Only support Full Yolo, Tiny Yolo, MobileNet, SqueezeNet, VGG16, ResNet50, and Inception3 at the moment!')
 
+        features = self.feature_extractor.extract(input_image)            
         rospy.logdebug(self.feature_extractor.get_output_shape())    
         self.grid_h, self.grid_w = self.feature_extractor.get_output_shape()        
-        features = self.feature_extractor.extract(input_image)            
 
         # make the object detection layer
         output = Conv2D(self.nb_box * (4 + 1 + self.nb_class), 
@@ -113,11 +113,11 @@ class YOLO(object):
         if n_gpu<=1:
             rospy.loginfo('Using 1 GPU...')
             self.mgpu_model = self.model
-            self.mgpu_model._make_predict_function()
+        #    self.mgpu_model._make_predict_function()
         else:
             rospy.loginfo('Using {} GPUs...'.format(n_gpu))
             self.mgpu_model = ModelMGPU(self.model, n_gpu)
-            self.mgpu_model._make_predict_function()
+        #    self.mgpu_model._make_predict_function()
 
     def custom_loss(self, y_true, y_pred):
         mask_shape = tf.shape(y_true)[:4]
