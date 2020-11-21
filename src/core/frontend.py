@@ -244,9 +244,9 @@ class YOLO(object):
         """
         Finalize the loss
         """
-        nb_coord_box = tf.reduce_sum(tf.cast(coord_mask > 0.0), tf.float32)
-        nb_conf_box  = tf.reduce_sum(tf.cast(conf_mask  > 0.0), tf.float32)
-        nb_class_box = tf.reduce_sum(tf.cast(class_mask > 0.0), tf.float32)
+        nb_coord_box = tf.reduce_sum(tf.cast(coord_mask > 0.0, tf.float32))
+        nb_conf_box  = tf.reduce_sum(tf.cast(conf_mask  > 0.0, tf.float32))
+        nb_class_box = tf.reduce_sum(tf.cast(class_mask > 0.0, tf.float32))
         
         loss_xy    = tf.reduce_sum(tf.square(true_box_xy-pred_box_xy)     * coord_mask) / (nb_coord_box + 1e-6) / 2.
         loss_wh    = tf.reduce_sum(tf.square(true_box_wh-pred_box_wh)     * coord_mask) / (nb_coord_box + 1e-6) / 2.
