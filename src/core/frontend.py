@@ -229,7 +229,7 @@ class YOLO(object):
         Warm-up training
         """
         no_boxes_mask = tf.cast(coord_mask < self.coord_scale/2., tf.float32)
-        seen = tf.assign_add(seen, 1.)
+        seen = tf.compat.v1.assign_add(seen, 1.)
         
         true_box_xy, true_box_wh, coord_mask = tf.cond(tf.less(seen, self.warmup_batches+1), 
                               lambda: [true_box_xy + (0.5 + cell_grid) * no_boxes_mask, 
@@ -263,7 +263,7 @@ class YOLO(object):
             nb_pred_box = tf.reduce_sum(tf.cast(true_box_conf > 0.5, tf.float32) * tf.cast(pred_box_conf > 0.3, tf.float32))
             
             current_recall = nb_pred_box/(nb_true_box + 1e-6)
-            total_recall = tf.assign_add(total_recall, current_recall) 
+            total_recall = tf.compat.v1.assign_add(total_recall, current_recall) 
 
             loss = tf.Print(loss, [loss_xy], message='Loss XY \t', summarize=1000)
             loss = tf.Print(loss, [loss_wh], message='Loss WH \t', summarize=1000)
