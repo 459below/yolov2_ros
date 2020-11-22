@@ -17,6 +17,8 @@ from .backend import TinyYoloFeature, FullYoloFeature, MobileNetFeature, Squeeze
 from tensorflow.python.client import device_lib
 import rospy
 
+tf.config.run_functions_eagerly(True)
+
 class ModelMGPU(Model):
     """
     This class is a hack to get the ModelCheckpoint callback to work with Keras's multi_gpu_model.
