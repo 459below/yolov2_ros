@@ -24,9 +24,10 @@ class YoloServer(object):
         self.bridge = CvBridge()
 
         self.n_gpu = rospy.get_param('~n_gpu', default=1)
-        self.backend = rospy.get_param('~backend', default='full_yolo')                          # Either 'tiny_yolo', full_yolo, 'mobile_net, 'squeeze_net', or 'inception3'
+        self.backend = rospy.get_param('~backend', default='Full Yolo')                          # Either 'tiny_yolo', full_yolo, 'mobile_net, 'squeeze_net', or 'inception3'
         self.backend_path = rospy.get_param('~weights_path')                                     # Weights directory
-        self.input_size = rospy.get_param('~input_size', default=416)                            # DO NOT change this. 416 is default for YOLO.
+        self.input_size = (rospy.get_param('~input_size_h', default=416),
+                           rospy.get_param('~input_size_w', default=416))                        # DO NOT change this. 416 is default for YOLO.
         self.labels = rospy.get_param('~labels')                                                 # Eg: ['trafficcone', 'person', 'dog']
         self.max_number_detections = rospy.get_param('~max_number_detections', default=5)        # Max number of detections
         self.anchors = rospy.get_param('~anchors', default=[0.57273, 0.677385, 1.87446,          # The anchors to use. Use the anchor generator and copy these into the config.
@@ -36,12 +37,9 @@ class YoloServer(object):
         self.weight_file = rospy.get_param('~weight_file')
 
         self.yolo = YOLO(
-            n_gpu=self.n_gpu,
             backend = self.backend,
-            backend_path=self.backend_path,
             input_size = self.input_size, 
             labels = self.labels, 
-            max_box_per_image = self.max_number_detections,
             anchors = self.anchors
         )
 
