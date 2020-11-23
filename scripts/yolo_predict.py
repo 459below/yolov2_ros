@@ -86,13 +86,14 @@ class Yolov2Ros(object):
         self.depth_image = data
 
     def _draw_boxes(self, image, detected):
+        image_h, image_w, _ = image.shape
         for detect in detected.detections:
             box = detect.bbox
-            xmin = int(box.center.x - (box.size_x/2))
-            xmax = int(box.center.x + (box.size_x/2))
-            ymin = int(box.center.y - (box.size_y/2))
-            ymax = int(box.center.y + (box.size_y/2))
-
+            xmin = int((box.center.x - (box.size_x/2)) * image_w)
+            xmax = int((box.center.x + (box.size_x/2)) * image_w)
+            ymin = int((box.center.y - (box.size_y/2)) * image_h)
+            ymax = int((box.center.y + (box.size_y/2)) * image_h)
+ 
             cv2.rectangle(image, (xmin,ymin), (xmax,ymax), (0,255,0), 3)
             cv2.putText(image, 
                         str(detect.results[0].score), 
