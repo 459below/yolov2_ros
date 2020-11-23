@@ -51,6 +51,25 @@ class YoloServer(object):
 
         s.spin()
 
+    def get_all_labels(self, box):
+        return box.classes
+
+    def get_xy_score(self, box):
+        if box.xy_score == -1:
+            box.xy_score = box.c[box.get_label()]
+
+        return box.xy_score
+
+    def get_xy_center(self, box):
+        x = ((box.xmax - box.xmin)/2) + box.xmin
+        y = ((box.ymax - box.ymin)/2) + box.ymin
+        return x, y
+
+    def get_xy_extents(self, box):
+        x = box.xmax - box.xmin
+        y = box.ymax - box.ymin
+        return x, y
+
     def _handle_yolo_detect(self, req):
         cv_image = None
         detection_array = Detection2DArray()
@@ -76,7 +95,7 @@ class YoloServer(object):
             detection.header.stamp = rospy.get_rostime()
             # detection.source_img = deepcopy(req.image)
 
-            labels = box.get_all_labels()
+            labels = self.get_all_labels(box)
             for i in range(0,len(labels)):
                 object_hypothesis = ObjectHypothesisWithPose()
                 object_hypothesis.id = i
@@ -85,13 +104,13 @@ class YoloServer(object):
             
             detection.results = results
 
-            x, y = box.get_xy_center()
+            x, y = self.get_xy_center(box)
             center.x = x
             center.y = y
             center.theta = 0.0
             bbox.center = center
 
-            size_x, size_y = box.get_xy_extents()
+            size_x, size_y = self.get_xy_extents(box)
             bbox.size_x = size_x
             bbox.size_y = size_y
 
