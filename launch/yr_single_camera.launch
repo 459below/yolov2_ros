@@ -1,5 +1,6 @@
 <launch>
      
+     <rosparam param="labels">['racoon']</rosparam>
      <group>
         <node name="usb_cam1" pkg="usb_cam" type="usb_cam_node" output="screen" >
             <param name="video_device" value="/dev/video0" />

@@ -26,7 +26,8 @@ class Yolov2Ros(object):
         self.bridge = CvBridge()
 
         self.rgb_image_topic = rospy.get_param('~image_topic', default='/camera/rgb/image_raw')  # RGB image topic
-        self.image_type = rospy.get_param('~image_type', default='rgb')  # Either 'rgb' or 'rgbd'
+        self.image_type = rospy.get_param('~image_type', default='rgb')                          # Either 'rgb' or 'rgbd'
+        self.labels = rospy.get_param('/labels')                                                 # Eg: ['trafficcone', 'person', 'dog']
 
         rospy.loginfo('Using RGB image topic {}'.format(self.rgb_image_topic))
         rospy.loginfo('Setting image type to {}'.format(self.image_type))
@@ -87,19 +88,27 @@ class Yolov2Ros(object):
 
     def _draw_boxes(self, image, detected):
         image_h, image_w, _ = image.shape
+
         for detect in detected.detections:
             box = detect.bbox
             xmin = int((box.center.x - (box.size_x/2)) * image_w)
             xmax = int((box.center.x + (box.size_x/2)) * image_w)
             ymin = int((box.center.y - (box.size_y/2)) * image_h)
             ymax = int((box.center.y + (box.size_y/2)) * image_h)
+
+            most_likely_label = 0
+            highest_score_label = 0
+
+            for i in range(0, len(detect.results)):
+                if highest_score_label < detect.results[i].score:
+                    most_likely_label = i
  
             cv2.rectangle(image, (xmin,ymin), (xmax,ymax), (0,255,0), 3)
-            cv2.putText(image, 
-                        str(detect.results[0].score), 
-                        (xmin, ymin - 13), 
-                        cv2.FONT_HERSHEY_SIMPLEX, 
-                        1e-3 * image.shape[0], 
+            cv2.putText(image,
+                        str(self.labels[most_likely_label]),
+                        (xmin, ymin - 13),
+                        cv2.FONT_HERSHEY_SIMPLEX,
+                        1e-3 * image.shape[0],
                         (0,255,0), 2)
 
         return image

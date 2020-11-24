@@ -28,7 +28,9 @@ class YoloServer(object):
         self.backend_path = rospy.get_param('~weights_path')                                     # Weights directory
         self.input_size = (rospy.get_param('~input_size_h', default=416),
                            rospy.get_param('~input_size_w', default=416))                        # DO NOT change this. 416 is default for YOLO.
-        self.labels = rospy.get_param('~labels')                                                 # Eg: ['trafficcone', 'person', 'dog']
+        self.labels = rospy.get_param('/labels')                                                 # Eg: ['trafficcone', 'person', 'dog']
+        self.iou_threshold = rospy.get_param('~iou_threshold', default=0.7)
+        self.score_threshold = rospy.get_param('~score_threshold', default=0.5)
         self.max_number_detections = rospy.get_param('~max_number_detections', default=5)        # Max number of detections
         self.anchors = rospy.get_param('~anchors', default=[0.57273, 0.677385, 1.87446,          # The anchors to use. Use the anchor generator and copy these into the config.
                                                   2.06253, 3.33843, 5.47434, 7.88282, 
@@ -81,7 +83,7 @@ class YoloServer(object):
         except CvBridgeError as e:
             rospy.logerr(e)
         try:
-            boxes = self.yolo.predict(cv_image)
+            boxes = self.yolo.predict(cv_image, self.iou_threshold, self.score_threshold)
         except SystemError:
             pass
         # rospy.loginfo('Found {} boxes'.format(len(boxes)))
