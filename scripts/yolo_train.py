@@ -14,13 +14,10 @@ os.environ["CUDA_VISIBLE_DEVICES"]="0,1"
 
 class YoloTrain(object):
     def __init__(self):
-        self.n_gpu = rospy.get_param('~n_gpu', default=1)  # # of GPUs to use to train
-        
         # Either 'tiny_yolo', full_yolo, 'mobile_net, 'squeeze_net', or 'inception3':
-        self.backend = rospy.get_param('~backend', default='full_yolo')
-        self.backend_path = rospy.get_param('~weights_path')  # Weights directory
-        self.input_size = rospy.get_param('~input_size', default=416)  # DO NOT change this. 416 is default for YOLO.
-        self.max_number_detections = rospy.get_param('~max_number_detections', default=5)  # Max number of detections
+        self.backend = rospy.get_param('~backend', default='Full Yolo')
+        self.input_size_w = rospy.get_param('~input_size_w', default=416)  # DO NOT change this. 416 is default for YOLO.
+        self.input_size_h = rospy.get_param('~input_size_h', default=416)  # DO NOT change this. 416 is default for YOLO.
         
         # The anchors to use. Use the anchor generator and copy these into the config.
         self.anchors = rospy.get_param('~anchors', default=[0.57273, 0.677385, 1.87446, 
@@ -46,6 +43,7 @@ class YoloTrain(object):
         self.no_object_scale = rospy.get_param('~no_object_scale', default=1.0)
         self.coord_scale = rospy.get_param('~coord_scale', default=1.0)
         self.class_scale = rospy.get_param('~class_scale', default=1.0)
+        self.debug = rospy.get_param('~debug', default=True)
 
         # parse annotations of the training set
         self.train_imgs, self.train_labels = parse_annotation_xml(
@@ -82,12 +80,9 @@ class YoloTrain(object):
             self.labels = self.train_labels.keys()
         
         self.yolo = YOLO(
-            n_gpu=self.n_gpu,
             backend = self.backend,
-            backend_path=self.backend_path,
-            input_size = self.input_size, 
+            input_size = (self.input_size_h, self.input_size_w), 
             labels = self.labels, 
-            max_box_per_image = self.max_number_detections,
             anchors = self.anchors
         )
 
@@ -105,7 +100,7 @@ class YoloTrain(object):
             coord_scale = self.coord_scale,
             class_scale = self.class_scale,
             saved_weights_name = self.saved_weights_name,
-            debug = False)
+            debug = self.debug)
         
         rospy.signal_shutdown('Completed training.')
 
