@@ -6,6 +6,8 @@ from __future__ import print_function
 
 import os
 import numpy as np
+import cv2
+from tqdm import tqdm
 import rospy
 from core import YOLO, parse_annotation_xml
 
@@ -46,10 +48,11 @@ class YoloTrain(object):
         self.debug = rospy.get_param('~debug', default=True)
 
         # parse annotations of the training set
-        self.train_imgs, self.train_labels = parse_annotation_xml(
-            self.train_annot_folder, 
-            self.train_image_folder, 
-            self.labels)
+        #self.train_imgs, self.train_labels = parse_annotation_xml(
+        #    self.train_annot_folder, 
+        #    self.train_image_folder, 
+        #    self.labels)
+        self.train_imgs, self.train_labels = _parse_annotation_ccpd(self.train_image_folder)
 
         # parse annotations of the validation set, if any, otherwise split the training set
         if 'valid_annot_folder' in rospy.get_param_names():
@@ -103,6 +106,37 @@ class YoloTrain(object):
             debug = self.debug)
         
         rospy.signal_shutdown('Completed training.')
+
+def _parse_annotation_ccpd(img_dir):
+    # This parser is utilized on CCPD dataset
+    all_imgs = []
+    seen_labels = {}
+
+    img_files = os.listdir(img_dir)
+    for img_file in tqdm(sorted(img_files)):
+
+        img_array = cv2.imread(os.path.join(img_dir, img_file))
+        ori_w, ori_h = [float(int(el)) for el in [img_array.shape[1], img_array.shape[0]]]
+
+        iname = img_file.rsplit('/', 1)[-1].rsplit('.', 1)[0].split('-')
+        [leftUp, rightDown] = [[int(eel) for eel in el.split('&')] for el in iname[2].split('_')]
+
+        img = {}
+        img['filename'] = os.path.join(img_dir, img_file)
+        img['width'] = ori_w
+        img['height'] = ori_h
+
+        img['object'] = [{
+            'name': 'license plate',
+            'xmin': int(leftUp[0]),
+            'ymin': int(leftUp[1]),
+            'xmax': int(rightDown[0]),
+            'ymax': int(rightDown[1])
+            }]
+
+        all_imgs += [img]
+
+    return all_imgs, seen_labels
 
 if __name__ == '__main__':
     rospy.init_node('yolov2_ros_train')
