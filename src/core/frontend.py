@@ -38,7 +38,7 @@ class YOLO(object):
             input_image = Input(shape=self._input_size)
 
         self._feature_extractor = import_feature_extractor(backend, self._input_size)
-        print(self._feature_extractor.feature_extractor.summary())
+        self._feature_extractor.feature_extractor.summary()
         print(self._feature_extractor.get_output_shape())
         self._grid_h, self._grid_w = self._feature_extractor.get_output_shape()
         features = self._feature_extractor.extract(input_image)
@@ -172,7 +172,7 @@ class YOLO(object):
                                      write_images=False)
 
         root, ext = os.path.splitext(saved_weights_name)
-        ckp_best_loss = ModelCheckpoint(root + "_bestLoss" + ext,
+        ckp_best_loss = ModelCheckpoint(saved_weights_name,
                                         monitor='val_loss',
                                         verbose=1,
                                         save_best_only=True,
