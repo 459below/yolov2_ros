@@ -89,6 +89,10 @@ class YoloTrain(object):
             anchors = self.anchors
         )
 
+        if os.path.exists(self.saved_weights_name):
+            rospy.loginfo('Loading existing weights to improve them further.')
+            self.yolo.load_weights(self.saved_weights_name)
+
         self.yolo.train(
             train_imgs = self.train_imgs,
             valid_imgs = self.valid_imgs,
