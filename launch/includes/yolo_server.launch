@@ -1,14 +1,13 @@
 <launch>
     <node pkg="yolov2_ros" name="yolo_server" type="yolo_server.py" output="screen">
-        <param name="n_gpu" type="int" value="1" />
-        <param name="backend" type="str" value="Full Yolo" />
+        <param name="backend" type="str" value="Tiny Yolo" />
         <param name="input_size_w" type="int" value="416" />
         <param name="input_size_h" type="int" value="416" />
-        <param name="iou_threshold" type="double" value="0.7" />
-        <param name="score_threshold" type="double" value="0.5" />
-        <param name="max_number_detections" type="int" value="1" />
+        <param name="iou_threshold" type="double" value="0" />
+        <param name="score_threshold" type="double" value="0.05" />
+        <param name="max_number_detections" type="int" value="10" />
         <rosparam param="anchors">[0.57273, 0.677385, 1.87446, 2.06253, 3.33843, 5.47434, 7.88282, 3.52778, 9.77052, 9.16828]</rosparam>
         <param name="weights_path" type="str" value="/building/weights" />
-        <param name="weight_file" type="str" value="best_full_yolo.h5" />
+        <param name="weight_file" type="str" value="full_yolo_ccpd_bestLoss.h5" />
     </node>
 </launch>

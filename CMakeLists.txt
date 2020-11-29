@@ -115,8 +115,11 @@ catkin_package(
 #  DEPENDS system_lib
 )
 
-catkin_install_python(PROGRAMS scripts/yolo_predict.py 
-			DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+catkin_install_python(PROGRAMS
+  scripts/yolo_predict.py
+  scripts/yolo_train.py
+  scripts/yolo_server.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 ###########
 ## Build ##
 ###########

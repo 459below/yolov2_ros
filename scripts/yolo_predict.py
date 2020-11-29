@@ -50,14 +50,15 @@ class Yolov2Ros(object):
         while not rospy.is_shutdown():
             cur_img = self.rgb_image
             cur_depth = self.depth_image
-            if cur_img.header.stamp != last_image.header.stamp:
+            if cur_img.header.stamp != last_image.header.stamp: # I am not sure whether this check makes sense
+            #if True:
                 rospy.wait_for_service('yolo_detect')
                 try:
                     yolo_detect = rospy.ServiceProxy('yolo_detect', YoloDetect, persistent=True)
                     detected = yolo_detect(YoloDetectRequest(cur_img)).detection
                     
                     try:
-                        cv_image = self.bridge.imgmsg_to_cv2(cur_img, "bgr8")
+                        cv_image = self.bridge.imgmsg_to_cv2(cur_img, "8UC3")
                         # cv_depth_image = self.bridge.imgmsg_to_cv2(cur_img, "16UC1")
                     except CvBridgeError as e:
                         rospy.logerr(e)
@@ -73,7 +74,7 @@ class Yolov2Ros(object):
                         self.detect_pub.publish(detected)
                     
                     image = self._draw_boxes(cv_image, detected)
-                    self.bounding_box_pub.publish(self.bridge.cv2_to_imgmsg(image, "bgr8"))
+                    self.bounding_box_pub.publish(self.bridge.cv2_to_imgmsg(image, "8UC3"))
                 except rospy.ServiceException as e:
                     rospy.logerr(e)
             
@@ -81,6 +82,7 @@ class Yolov2Ros(object):
             # rate.sleep()
     
     def _image_cb(self, data):
+        #data.header.stamp = rospy.Time.now() # TODO hack for messages missing correct timestamps
         self.rgb_image = data
 
     def _depth_cb(self, data):
