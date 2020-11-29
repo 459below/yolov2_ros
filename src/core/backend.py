@@ -7,6 +7,15 @@ from tensorflow.keras.applications.vgg16 import VGG16
 from tensorflow.keras.layers import Activation, Conv2D, Input, MaxPooling2D, BatchNormalization, Lambda, LeakyReLU, \
     concatenate
 
+# Setting memory to dynamically grow
+gpus = tf.config.experimental.list_physical_devices('GPU')
+if gpus:
+  try:
+    for gpu in gpus:
+      tf.config.experimental.set_memory_growth(gpu, True)
+  except RuntimeError as e:
+    print(e)
+
 base_path = './backend_weights/'  # FIXME :: use environment variables
 
 FULL_YOLO_BACKEND_PATH = base_path + "full_yolo_backend.h5"  # should be hosted on a server
