@@ -7,7 +7,7 @@ import cv2
 import numpy as np
 import tensorflow as tf
 
-from .backend import (TinyYoloFeature, FullYoloFeature, MobileNetFeature, SqueezeNetFeature, Inception3Feature,
+from .backend import (TinyYoloFeature, FullYoloV3Feature,FullYoloFeature, MobileNetFeature, SqueezeNetFeature, Inception3Feature,
                       VGG16Feature, ResNet50Feature, BaseFeatureExtractor)
 
 
@@ -256,6 +256,8 @@ def import_feature_extractor(backend, input_size):
         feature_extractor = SqueezeNetFeature(input_size)
     elif backend == 'MobileNet':
         feature_extractor = MobileNetFeature(input_size)
+    elif backend == 'Full Yolo V3':
+        feature_extractor = FullYoloV3Feature(input_size)
     elif backend == 'Full Yolo':
         feature_extractor = FullYoloFeature(input_size)
     elif backend == 'Tiny Yolo':

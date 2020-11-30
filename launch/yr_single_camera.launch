@@ -28,8 +28,8 @@
     <!--<include file="$(find yolov2_ros)/launch/includes/yolo_server.launch" />-->
 
     <node pkg="yolov2_ros" name="yolo_server" type="yolo_server.py" output="screen">
-        <param name="backend_vehicles" type="str" value="Tiny Yolo" />
-        <param name="backend_licence_plate" type="str" value="Full Yolo" />
+        <param name="backend_vehicles" type="str" value="Full Yolo V3" />
+        <param name="backend_licence_plate" type="str" value="Full Yolo V3" />
         <param name="input_size_w" type="int" value="416" />
         <param name="input_size_h" type="int" value="416" />
         <param name="iou_threshold" type="double" value="0.3" />
